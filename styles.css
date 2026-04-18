@@ -1,281 +1,769 @@
-document.addEventListener('DOMContentLoaded', () => {
+:root {
+    /* Light Theme (Default) */
+    --primary: #111111;
+    --primary-hover: #000000;
+    --accent: #FFCA07;
+    --bg-color: #F5F5F7;
+    --surface: #FFFFFF;
+    --surface-hover: #FAFAFA;
+    --border: #E5E5EA;
+    --border-hover: #D1D1D6;
+    --text-main: #1D1D1F;
+    --text-muted: #86868B;
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+    --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 
-    const pricingData = {
-        "Batik Totebag Reversible": { 50: 49, 100: 45, 300: 42, 500: 40, 1000: 38 },
-        "Batik Mini Doorgift": { 50: 46, 100: 42, 300: 38, 500: 36, 1000: 34 },
-        "Batik Notebook": { 50: 42, 100: 38, 300: 35, 500: 33, 1000: 31 },
-        "Batik Kipas Tangan w Cover": { 50: 22, 100: 19, 300: 16, 500: 15, 1000: 14 },
-        "Batik Zipper Bag / Foldable": { 50: 49, 100: 45, 300: 40, 500: 38, 1000: 36 },
-        "Batik Lanyard Holder": { 50: 45, 100: 40, 300: 35, 500: 33, 1000: 31 },
-        "Batik Passport Holder": { 50: 50, 100: 46, 300: 42, 500: 40, 1000: 38 }
-    };
+    --display-sun: block;
+    --display-moon: none;
 
-    const productSelect = document.getElementById('product');
-    const quantityInput = document.getElementById('quantity');
-    const timelineSelect = document.getElementById('timeline');
-    const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
+    --pricing-bg: #101010;
+    --pricing-text: #F5F5F7;
+    --pricing-muted: #86868B;
+    --pricing-divider: rgba(255, 255, 255, 0.1);
+}
 
-    const quantityHint = document.getElementById('quantity-hint');
-    const savingsMessage = document.getElementById('savings-message');
-    const customProductContainer = document.getElementById('custom-product-container');
-    const customProductInput = document.getElementById('custom-product');
-    const tailoredQuoteMsg = document.getElementById('tailored-quote-msg');
-    const pricingBoxContainer = document.getElementById('pricing-box-container');
-    const interactiveFieldsContainer = document.getElementById('interactive-fields-container');
-    const emptyStateContainer = document.getElementById('empty-state-container');
+body.dark {
+    /* Dark Theme */
+    --primary: #FFFFFF;
+    --primary-hover: #EBEBEB;
+    --bg-color: #000000;
+    --surface: #1C1C1E;
+    --surface-hover: #2C2C2E;
+    --border: #3A3A3C;
+    --border-hover: #48484A;
+    --text-main: #F5F5F7;
+    --text-muted: #86868B;
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.6);
 
-    const addonLogo = document.getElementById('addon-logo');
-    const addonCard = document.getElementById('addon-card');
-    const addonPackaging = document.getElementById('addon-packaging');
+    --display-sun: none;
+    --display-moon: block;
 
-    const unitPriceDisplay = document.getElementById('unit-price');
-    const totalPriceDisplay = document.getElementById('total-price');
-    const depositPriceDisplay = document.getElementById('deposit-price');
-    const balancePriceDisplay = document.getElementById('balance-price');
-    const depositSection = document.getElementById('deposit-section');
-    const pricingNote = document.getElementById('pricing-note');
+    --pricing-bg: #101010;
+    --pricing-text: #FFFFFF;
+    --pricing-muted: rgba(255, 255, 255, 0.7);
+    --pricing-divider: rgba(255, 255, 255, 0.2);
+}
 
-    const leadForm = document.getElementById('lead-form');
-    const estimatorPanel = document.querySelector('.estimator-panel');
-    const leadSection = document.getElementById('lead-section');
-    const successMessage = document.getElementById('success-message');
-    const resetBtn = document.getElementById('reset-btn');
-    const estimatorForm = document.getElementById('estimator-form');
-    const backToCalcBtn = document.getElementById('back-to-calc-btn');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    let currentUnitPrice = 0;
-    let currentTotalPrice = 0;
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
 
-    // Theme Management
-    const initTheme = () => {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            body.classList.add('dark');
-        }
-    };
+.app-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+    min-height: 100vh;
+}
 
-    themeToggle.addEventListener('click', () => {
-        body.classList.toggle('dark');
-        localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
-    });
+/* Header Styles */
+.app-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
 
-    initTheme();
+.header-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 0.5rem;
+}
 
-    const formatCurrency = (amount) => {
-        return `RM\u00A0${amount.toLocaleString('en-MY', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        })}`;
-    };
+.app-header h1 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
 
-    const calculatePricing = () => {
-        const product = productSelect.value;
-        const quantity = parseInt(quantityInput.value) || 0;
+.theme-btn,
+.back-btn {
+    position: absolute;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-main);
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        if (!product) {
-            emptyStateContainer.classList.remove('hidden');
-            pricingBoxContainer.classList.add('hidden');
-            interactiveFieldsContainer.classList.add('hidden');
-            customProductContainer.classList.add('hidden');
-            tailoredQuoteMsg.classList.add('hidden');
-            backToCalcBtn.classList.add('hidden');
-            savingsMessage.classList.add('hidden');
-            quantityHint.textContent = "";
-            return;
-        }
+.theme-btn {
+    right: 0;
+}
 
-        if (product === 'other') {
-            emptyStateContainer.classList.add('hidden');
-            interactiveFieldsContainer.classList.remove('hidden');
-            customProductContainer.classList.remove('hidden');
-            pricingBoxContainer.classList.add('hidden');
-            tailoredQuoteMsg.classList.remove('hidden');
-            backToCalcBtn.classList.remove('hidden');
-            return;
-        }
+.back-btn {
+    left: 0;
+}
 
-        backToCalcBtn.classList.add('hidden');
+.theme-btn:hover,
+.back-btn:hover {
+    background-color: var(--surface-hover);
+}
 
-        if (!quantity) {
-            emptyStateContainer.classList.remove('hidden');
-            pricingBoxContainer.classList.add('hidden');
-            interactiveFieldsContainer.classList.add('hidden');
-            return;
-        }
+.back-btn:hover {
+    transform: translateX(-3px);
+}
 
-        emptyStateContainer.classList.add('hidden');
-        interactiveFieldsContainer.classList.remove('hidden');
-        pricingBoxContainer.classList.remove('hidden');
-        tailoredQuoteMsg.classList.add('hidden');
-        customProductContainer.classList.add('hidden');
+.sun-icon {
+    display: var(--display-sun);
+}
 
-        let tier = 50;
-        if (quantity >= 1000) tier = 1000;
-        else if (quantity >= 500) tier = 500;
-        else if (quantity >= 300) tier = 300;
-        else if (quantity >= 100) tier = 100;
+.moon-icon {
+    display: var(--display-moon);
+}
 
-        let basePrice = pricingData[product][tier] || 0;
+.app-header h2 {
+    font-size: 38px;
+    font-weight: 600;
+    letter-spacing: -2px;
+    color: var(--text-main);
+    margin-bottom: 0.75rem;
+}
 
-        const bestPrice = pricingData[product][1000];
-        if (tier < 1000) {
-            const savings = basePrice - bestPrice;
-            savingsMessage.textContent = `Save ${formatCurrency(savings)}/unit at 1000+ pcs`;
-            savingsMessage.classList.remove('hidden');
-        } else {
-            savingsMessage.classList.add('hidden');
-        }
+.app-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
 
-        let hint = "";
-        if (quantity >= 1000) hint = "Best price applied (1000+)";
-        else if (quantity >= 500) hint = "Better pricing unlocked (500+)";
-        else if (quantity >= 300) hint = "Better pricing unlocked (300+)";
-        else if (quantity >= 100) hint = "Better pricing unlocked (100+)";
-        else hint = "Increase quantity for better pricing";
+/* Estimator Panel */
+.estimator-panel {
+    width: 100%;
+    margin-bottom: 2.5rem;
+}
 
-        if (timelineSelect.value === "Urgent") {
-            hint += " • Urgent +RM5/unit";
-        }
+.glass-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+    width: 100%;
+    margin-bottom: 2.5rem;
+    padding: 2.5rem;
+}
 
-        quantityHint.textContent = hint;
+.glass-card:hover {
+    box-shadow: var(--shadow-hover);
+}
 
-        let addonTotal = 0;
-        if (addonLogo.checked) addonTotal += 3;
-        if (addonCard.checked) addonTotal += 2;
-        if (addonPackaging.checked) addonTotal += 5;
+.calculator-card,
+.lead-card {
+    padding: 2.5rem;
+}
 
-        let rushFee = timelineSelect.value === "Urgent" ? 5 : 0;
+.glass-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+    width: 100%;
+    margin-bottom: 2.5rem;
+}
 
-        currentUnitPrice = basePrice + addonTotal + rushFee;
-        currentTotalPrice = currentUnitPrice * quantity;
+.glass-card:hover {
+    box-shadow: var(--shadow-hover);
+}
 
-        unitPriceDisplay.textContent = formatCurrency(currentUnitPrice);
-        totalPriceDisplay.textContent = formatCurrency(currentTotalPrice);
-        if (depositPriceDisplay && balancePriceDisplay) {
-            depositPriceDisplay.textContent = formatCurrency(currentTotalPrice * 0.6);
-            balancePriceDisplay.textContent = formatCurrency(currentTotalPrice * 0.4);
-        }
+.calculator-card,
+.lead-card {
+    padding: 2.5rem;
+}
 
-        if (depositSection && pricingNote) {
-            if (quantity >= 100) {
-                depositSection.style.display = 'block';
-                pricingNote.innerHTML = `Estimated pricing based on standard specifications.<br>\n                                60% deposit required to confirm order, balance upon completion.<br>\n                                Delivery charges are calculated separately.`;
-            } else {
-                depositSection.style.display = 'none';
-                pricingNote.innerHTML = `Estimated pricing based on standard specifications.<br>\n                                Full payment is required for orders below 100 pcs.<br>\n                                Delivery charges are calculated separately.`;
-            }
-        }
-    };
+.calculator-card {
+    /* Keeping estimator specifics if any */
+}
 
-    productSelect.addEventListener('change', calculatePricing);
-    quantityInput.addEventListener('input', calculatePricing);
-    timelineSelect.addEventListener('change', calculatePricing);
-    addonLogo.addEventListener('change', calculatePricing);
-    addonCard.addEventListener('change', calculatePricing);
-    addonPackaging.addEventListener('change', calculatePricing);
+.lead-layout {
+    margin-top: 1rem;
+}
 
-    calculatePricing();
+.form-group {
+    margin-bottom: 1.5rem;
+}
 
-    backToCalcBtn.addEventListener('click', () => {
-        productSelect.value = "";
-        calculatePricing();
-    });
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
 
-    // ✅ FIXED SUBMIT FLOW
-    leadForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+.select-wrapper {
+    position: relative;
+}
 
-        const product = productSelect.value;
-        const addons = [];
-        if (product !== 'other') {
-            if (addonLogo.checked) addons.push('Logo Printing');
-            if (addonCard.checked) addons.push('Custom Card');
-            if (addonPackaging.checked) addons.push('Premium Packaging');
-        }
+.select-wrapper::after {
+    content: "▼";
+    font-size: 0.6rem;
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-muted);
+}
 
-        const payload = {
-            name: document.getElementById('name').value,
-            company: document.getElementById('company').value,
-            phone: document.getElementById('phone').value,
-            email: document.getElementById('email').value,
-            product: product === 'other' ? "Other/Not Sure" : product,
-            customDescription: product === 'other' ? customProductInput.value : "N/A",
-            quantity: parseInt(quantityInput.value) || 0,
-            timeline: timelineSelect ? timelineSelect.value : "Normal",
-            addons: addons,
-            unitPrice: product === 'other' ? "Custom" : formatCurrency(currentUnitPrice),
-            totalPrice: product === 'other' ? "Custom" : formatCurrency(currentTotalPrice)
-        };
+select,
+input {
+    appearance: none;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: var(--surface);
+    color: var(--text-main);
+    transition: var(--transition);
+}
 
-        const submitBtn = document.getElementById('submit-lead-btn');
-        const originalBtnText = submitBtn.innerHTML;
+select:focus,
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255, 202, 7, 0.15);
+}
 
-        try {
-            submitBtn.innerHTML = '<span>Submitting...</span>';
-            submitBtn.disabled = true;
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 
-            // ✅ NUCLEAR CORS FIX: HIDDEN FORM SUBMISSION
-            // This bypasses OPTIONS/CORS preflight entirely
-            let iframe = document.getElementById('hidden_iframe');
-            if (!iframe) {
-                iframe = document.createElement('iframe');
-                iframe.id = 'hidden_iframe';
-                iframe.name = 'hidden_iframe';
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-            }
+input[type="number"] {
+    -moz-appearance: textfield;
+}
 
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'https://webhook.site/949758d1-822c-4655-9346-27a3afd55b36';
-            form.target = 'hidden_iframe';
+textarea {
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text-main);
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+    padding: 1.25rem;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+}
 
-            // Map each field to its own form input for perfect readability
-            Object.keys(payload).forEach(key => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                // Convert arrays (like addons) to a comma-separated string
-                input.value = Array.isArray(payload[key]) ? payload[key].join(', ') : payload[key];
-                form.appendChild(input);
-            });
+textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
 
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(255, 202, 7, 0.1);
+    background-color: var(--surface-hover);
+}
 
-            // Small delay to ensure browser initiates submission before hiding UI
-            setTimeout(() => {
-                estimatorPanel.style.display = 'none';
-                leadSection.style.display = 'none';
-                successMessage.classList.remove('hidden');
+#custom-product-container {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 1;
+    transform: translateY(0);
+    overflow: hidden;
+    max-height: 400px;
+}
 
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-            }, 500);
+#custom-product-container.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    pointer-events: none;
+    display: block !important;
+    /* Override .hidden display:none to allow transition */
+}
 
-        } catch (error) {
-            console.error('Submission error:', error);
-            // Fallback success UI
-            estimatorPanel.style.display = 'none';
-            leadSection.style.display = 'none';
-            successMessage.classList.remove('hidden');
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-        }
-    });
+.quantity-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.75rem;
+    padding-left: 0.25rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
 
-    resetBtn.addEventListener('click', () => {
-        estimatorForm.reset();
-        leadForm.reset();
-        calculatePricing();
+.quantity-hint.unlock {
+    color: #4CAF50;
+    /* Success green */
+}
 
-        successMessage.classList.add('hidden');
-        estimatorPanel.style.display = 'block';
-        leadSection.style.display = 'block';
+.quantity-hint.highlight {
+    color: #FFCA07;
+    /* Highlight yellow */
+    font-weight: 600;
+}
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+/* Dark mode specific for highlight visibility */
+body.dark .quantity-hint.highlight {
+    color: #ffd84d;
+}
 
-});
+.catalog-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.75rem;
+    line-height: 1.4;
+}
+
+.catalog-hint a {
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.catalog-hint a:hover {
+    color: var(--text-main);
+}
+
+.catalog-hint.secondary {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Empty State Message */
+.empty-state-container {
+    padding: 3.5rem 2rem;
+    text-align: center;
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    margin-top: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.4s ease;
+}
+
+.empty-state-msg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #a1a1a6;
+}
+
+.empty-state-msg svg {
+    color: var(--accent);
+    opacity: 0.6;
+}
+
+.empty-state-msg p {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Addons */
+.addons-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.addon-checkbox {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.addon-checkbox:hover {
+    border-color: var(--border-hover);
+    background-color: var(--surface-hover);
+}
+
+.addon-left {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.custom-checkbox {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    margin: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: transparent;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.custom-checkbox:hover input~.checkmark {
+    border-color: var(--border-hover);
+}
+
+.custom-checkbox input:checked~.checkmark {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-checkbox input:checked~.checkmark:after {
+    display: block;
+}
+
+.custom-checkbox .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid #111;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.addon-name {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.addon-price {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Pricing Display */
+.pricing-display {
+    background: #191919;
+    color: #ffffff;
+    border-radius: var(--radius-md);
+    padding: 2.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.4s ease;
+}
+
+body.dark .pricing-display {
+    background-color: #101010;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    color: #a1a1a6;
+    font-weight: 500;
+}
+
+.price-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.05);
+    margin: 1.5rem 0;
+}
+
+.price-row.total {
+    color: #ffffff;
+    align-items: center;
+}
+
+.price-value {
+    color: #ffffff;
+}
+
+.price-value.highlight {
+    font-size: clamp(28px, 6vw, 48px);
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -1.5px;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+@media (max-width: 480px) {
+    .price-row.total {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+#pricing-box-container {
+    width: 100%;
+}
+
+/* Empty State Message */
+.empty-state-container {
+    padding: 3rem 2rem;
+    text-align: center;
+    background: var(--surface-hover);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+    margin-top: 2rem;
+    animation: fadeIn 0.4s ease;
+}
+
+.empty-state-msg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-muted);
+}
+
+/* Tailored Quote Msg */
+.tailored-quote-msg {
+    padding: 2.5rem;
+    text-align: center;
+    background: #191919;
+    border-radius: var(--radius-md);
+    margin-top: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    animation: fadeIn 0.4s ease;
+    color: #ffffff;
+    transition: background-color 0.4s ease;
+}
+
+body.dark .tailored-quote-msg {
+    background-color: #101010;
+}
+
+.msg-icon {
+    margin-bottom: 1rem;
+    color: #FFCA07;
+}
+
+.tailored-quote-msg p {
+    color: #a1a1a6;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Lead Section */
+.lead-card {
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.lead-card h3 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.lead-desc {
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+}
+
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+@media (min-width: 600px) {
+    .input-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.submit-btn {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 1.15rem;
+    background-color: var(--primary);
+    color: var(--bg-color);
+    /* Contrast color */
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+
+.submit-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+body.dark .submit-btn {
+    background-color: var(--accent);
+    color: #111;
+}
+
+body.dark .submit-btn:hover {
+    background-color: #E6B606;
+}
+
+/* WhatsApp CTA */
+.whatsapp-container {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.whatsapp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: transparent;
+    border: 1.5px solid #25D366;
+    border-radius: var(--radius-md);
+    color: #25D366;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition);
+}
+
+.whatsapp-btn:hover {
+    background-color: #25D366;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(37, 211, 102, 0.15);
+}
+
+body.dark .whatsapp-btn {
+    border-color: #25D366;
+    color: #25D366;
+}
+
+body.dark .whatsapp-btn:hover {
+    background-color: #25D366;
+    color: #000;
+}
+
+/* Success Card */
+.success-card {
+    text-align: center;
+    padding: 5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-card.hidden {
+    display: none;
+}
+
+.success-icon {
+    margin-bottom: 1.5rem;
+    background-color: rgba(255, 202, 7, 0.1);
+    color: var(--accent);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.secondary-btn {
+    padding: 0.8rem 2rem;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.secondary-btn:hover {
+    background-color: var(--surface-hover);
+    border-color: var(--text-main);
+}
