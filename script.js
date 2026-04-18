@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTheme();
 
     const formatCurrency = (amount) => {
-        return `RM ${amount.toLocaleString('en-MY', {
+        return `RM\u00A0${amount.toLocaleString('en-MY', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         })}`;
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 estimatorPanel.style.display = 'none';
                 leadSection.style.display = 'none';
                 successMessage.classList.remove('hidden');
-                
+
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
             }, 500);
@@ -270,11 +270,11 @@ document.addEventListener('DOMContentLoaded', () => {
         estimatorForm.reset();
         leadForm.reset();
         calculatePricing();
-        
+
         successMessage.classList.add('hidden');
         estimatorPanel.style.display = 'block';
         leadSection.style.display = 'block';
-        
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
