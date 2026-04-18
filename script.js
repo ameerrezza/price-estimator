@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             interactiveFieldsContainer.classList.remove('hidden');
             customProductContainer.classList.remove('hidden');
             pricingBoxContainer.classList.add('hidden');
-            tailoredQuoteMsg.classList.remove('hidden');
+            tailoredQuoteMsg.classList.add('hidden');
             backToCalcBtn.classList.remove('hidden');
             return;
         }
@@ -277,5 +277,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
+    const whatsappBtn = document.getElementById('whatsapp-confirm-btn');
+    if (whatsappBtn) {
+        whatsappBtn.addEventListener('click', () => {
+            let product = productSelect.value || 'Not specified';
+            if (product === 'other') {
+                product = customProductInput.value || 'Other/Not sure';
+            }
+            const quantity = quantityInput.value || '0';
+            const total = totalPriceDisplay.textContent || 'RM 0.00';
+            const timeline = timelineSelect ? timelineSelect.value : 'Not specified';
+
+            const message = `Hi KUL Gifts, I’d like to confirm this order:\n\nProduct: ${product}\nQuantity: ${quantity} pcs\nProduction Timeline: ${timeline}\nEstimated Price: ${total}\n\nCan you confirm availability and next steps?`;
+
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/60182630390?text=${encodedMessage}`, '_blank');
+        });
+    }
 
 });
