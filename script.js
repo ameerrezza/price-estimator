@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             customDescription: product === 'other' ? customProductInput.value : "N/A",
             quantity: parseInt(quantityInput.value) || 0,
             timeline: timelineSelect ? timelineSelect.value : "Normal",
-            addons: addons.join(', '),
+            addons: addons,
             unitPrice: product === 'other' ? "Custom" : formatCurrency(currentUnitPrice),
             totalPrice: product === 'other' ? "Custom" : formatCurrency(currentTotalPrice)
         };
@@ -219,9 +219,21 @@ document.addEventListener('DOMContentLoaded', () => {
             await fetch('https://hook.eu2.make.com/r7xytg9xmijdx4fks2cpxqyp6lc1y3mx', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: JSON.stringify(payload)
+                body: new URLSearchParams({
+                    name: payload.name,
+                    company: payload.company,
+                    phone: payload.phone,
+                    email: payload.email,
+                    product: payload.product,
+                    customDescription: payload.customDescription,
+                    quantity: payload.quantity,
+                    timeline: payload.timeline,
+                    addons: (payload.addons || []).join(', '),
+                    unitPrice: payload.unitPrice,
+                    totalPrice: payload.totalPrice
+                })
             });
 
             // Small delay to ensure browser initiates submission before hiding UI
