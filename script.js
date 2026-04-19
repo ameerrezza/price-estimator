@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             customDescription: product === 'other' ? customProductInput.value : "N/A",
             quantity: parseInt(quantityInput.value) || 0,
             timeline: timelineSelect ? timelineSelect.value : "Normal",
-            addons: addons,
+            addons: addons.join(', '),
             unitPrice: product === 'other' ? "Custom" : formatCurrency(currentUnitPrice),
             totalPrice: product === 'other' ? "Custom" : formatCurrency(currentTotalPrice)
         };
@@ -218,7 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Send payload to Make.com Webhook
             await fetch('https://hook.eu2.make.com/r7xytg9xmijdx4fks2cpxqyp6lc1y3mx', {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
