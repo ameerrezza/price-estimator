@@ -216,47 +216,14 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
 
             // Send payload to Make.com Webhook
-            try {
-                await fetch('https://hook.eu2.make.com/r7xytg9xmijdx4fks2cpxqyp6lc1y3mx', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-            } catch (err) {
-                console.error('Fetch to Make.com failed:', err);
-            }
-
-            // ✅ NUCLEAR CORS FIX: HIDDEN FORM SUBMISSION
-            // This bypasses OPTIONS/CORS preflight entirely
-            let iframe = document.getElementById('hidden_iframe');
-            if (!iframe) {
-                iframe = document.createElement('iframe');
-                iframe.id = 'hidden_iframe';
-                iframe.name = 'hidden_iframe';
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-            }
-
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'https://webhook.site/949758d1-822c-4655-9346-27a3afd55b36';
-            form.target = 'hidden_iframe';
-
-            // Map each field to its own form input for perfect readability
-            Object.keys(payload).forEach(key => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                // Convert arrays (like addons) to a comma-separated string
-                input.value = Array.isArray(payload[key]) ? payload[key].join(', ') : payload[key];
-                form.appendChild(input);
+            await fetch('https://hook.eu2.make.com/r7xytg9xmijdx4fks2cpxqyp6lc1y3mx', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
             });
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
 
             // Small delay to ensure browser initiates submission before hiding UI
             setTimeout(() => {
