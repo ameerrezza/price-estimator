@@ -215,26 +215,21 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = '<span>Submitting...</span>';
             submitBtn.disabled = true;
 
-            // Send payload to Make.com Webhook
-            await fetch('https://hook.eu2.make.com/r7xytg9xmijdx4fks2cpxqyp6lc1y3mx', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    name: payload.name,
-                    company: payload.company,
-                    phone: payload.phone,
-                    email: payload.email,
-                    product: payload.product,
-                    customDescription: payload.customDescription,
-                    quantity: payload.quantity,
-                    timeline: payload.timeline,
-                    addons: (payload.addons || []).join(', '),
-                    unitPrice: payload.unitPrice,
-                    totalPrice: payload.totalPrice
-                })
+            // Send payload to Make.com Webhook via Hidden Form to bypass CORS
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://hook.eu2.make.com/r7xytg9xmijdx4fks2cpxqyp6lc1y3mx';
+
+            Object.entries(payload).forEach(([key, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = Array.isArray(value) ? value.join(', ') : value;
+                form.appendChild(input);
             });
+
+            document.body.appendChild(form);
+            form.submit();
 
             // Small delay to ensure browser initiates submission before hiding UI
             setTimeout(() => {
