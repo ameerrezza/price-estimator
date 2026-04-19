@@ -215,10 +215,20 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = '<span>Submitting...</span>';
             submitBtn.disabled = true;
 
-            // Send payload to Make.com Webhook via Hidden Form to bypass CORS
+            // Send payload to Make.com Webhook via Hidden Form to bypass CORS and prevent redirect
+            let iframe = document.getElementById('hidden_iframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.id = 'hidden_iframe';
+                iframe.name = 'hidden_iframe';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+            }
+
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = 'https://hook.eu2.make.com/r7xytg9xmijdx4fks2cpxqyp6lc1y3mx';
+            form.action = 'https://hook.eu2.make.com/r7xytg9xmljdx4fks2cpxqyp6lc1y3mx';
+            form.target = 'hidden_iframe';
 
             Object.entries(payload).forEach(([key, value]) => {
                 const input = document.createElement('input');
@@ -230,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             document.body.appendChild(form);
             form.submit();
+            document.body.removeChild(form);
 
             // Small delay to ensure browser initiates submission before hiding UI
             setTimeout(() => {
