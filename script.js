@@ -215,6 +215,19 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = '<span>Submitting...</span>';
             submitBtn.disabled = true;
 
+            // Send payload to Make.com Webhook
+            try {
+                await fetch('https://hook.eu2.make.com/r7xytg9xmijdx4fks2cpxqyp6lc1y3mx', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {
+                console.error('Fetch to Make.com failed:', err);
+            }
+
             // ✅ NUCLEAR CORS FIX: HIDDEN FORM SUBMISSION
             // This bypasses OPTIONS/CORS preflight entirely
             let iframe = document.getElementById('hidden_iframe');
