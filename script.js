@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     const pricingData = {
-        "Batik Totebag Reversible": { 50: 49, 100: 45, 300: 42, 500: 40, 1000: 38 },
-        "Batik Mini Doorgift": { 50: 46, 100: 42, 300: 38, 500: 36, 1000: 34 },
-        "Batik Notebook": { 50: 42, 100: 38, 300: 35, 500: 33, 1000: 31 },
-        "Batik Kipas Tangan w Cover": { 50: 22, 100: 19, 300: 16, 500: 15, 1000: 14 },
-        "Batik Zipper Bag / Foldable": { 50: 49, 100: 45, 300: 40, 500: 38, 1000: 36 },
-        "Batik Lanyard Holder": { 50: 45, 100: 40, 300: 35, 500: 33, 1000: 31 },
-        "Batik Passport Holder": { 50: 50, 100: 46, 300: 42, 500: 40, 1000: 38 }
+        "Batik Totebag Reversible": { 50: 49, 100: 42, 300: 36, 500: 32, 1000: 29 },
+        "Batik Mini Doorgift": { 50: 49, 100: 42, 300: 36, 500: 32, 1000: 29 },
+        "Batik Notebook": { 50: 49, 100: 42, 300: 36, 500: 32, 1000: 29 },
+        "Batik Kipas Tangan w Cover": { 50: 29, 100: 24, 300: 20, 500: 18, 1000: 16 },
+        "Batik Zipper Bag / Foldable": { 50: 59, 100: 49, 300: 42, 500: 38, 1000: 34 },
+        "Batik Lanyard Holder": { 50: 59, 100: 49, 300: 42, 500: 38, 1000: 34 },
+        "Batik Passport Holder": { 50: 59, 100: 49, 300: 42, 500: 38, 1000: 34 }
     };
 
     const productSelect = document.getElementById('product');
