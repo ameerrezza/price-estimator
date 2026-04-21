@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (productSelect.value !== 'other') {
             customProductInput.value = '';
         }
-        quantityInput.innerHTML = '<option value="" disabled selected hidden>Select quantity</option>';
         quantityInput.value = '';
         quantityHint.textContent = "";
     }
@@ -87,29 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderQuantityOptions() {
-        const product = productSelect.value;
-        quantityInput.innerHTML = '<option value="" disabled selected hidden>Select quantity</option>';
-        
-        let tiers = [50, 100, 300, 500, 1000];
-        if (product && product !== 'other' && pricingData[product]) {
-            tiers = Object.keys(pricingData[product]).map(Number).sort((a,b) => a - b);
-        }
-        
-        if (product) {
-            tiers.forEach(tier => {
-                const opt = document.createElement('option');
-                opt.value = tier;
-                opt.textContent = `${tier} pcs`;
-                quantityInput.appendChild(opt);
-            });
-        }
-    }
-
     function handleProductChange() {
         resetDynamicFields();
         renderProductFields();
-        renderQuantityOptions();
         updatePrice();
     }
 
@@ -210,14 +189,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     productSelect.addEventListener('change', handleProductChange);
-    quantityInput.addEventListener('change', updatePrice);
+    quantityInput.addEventListener('input', updatePrice);
     timelineSelect.addEventListener('change', updatePrice);
     addonLogo.addEventListener('change', updatePrice);
     addonCard.addEventListener('change', updatePrice);
     addonPackaging.addEventListener('change', updatePrice);
 
     renderProductFields();
-    renderQuantityOptions();
     updatePrice();
 
     backToCalcBtn.addEventListener('click', () => {
