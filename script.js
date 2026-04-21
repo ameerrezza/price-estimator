@@ -69,7 +69,51 @@ document.addEventListener('DOMContentLoaded', () => {
         })}`;
     };
 
-    const calculatePricing = () => {
+    function resetDynamicFields() {
+        if (productSelect.value !== 'other') {
+            customProductInput.value = '';
+        }
+        quantityInput.innerHTML = '<option value="" disabled selected hidden>Select quantity</option>';
+        quantityInput.value = '';
+        quantityHint.textContent = "";
+    }
+
+    function renderProductFields() {
+        const product = productSelect.value;
+        if (product === 'other') {
+            customProductContainer.classList.remove('hidden');
+        } else {
+            customProductContainer.classList.add('hidden');
+        }
+    }
+
+    function renderQuantityOptions() {
+        const product = productSelect.value;
+        quantityInput.innerHTML = '<option value="" disabled selected hidden>Select quantity</option>';
+        
+        let tiers = [50, 100, 300, 500, 1000];
+        if (product && product !== 'other' && pricingData[product]) {
+            tiers = Object.keys(pricingData[product]).map(Number).sort((a,b) => a - b);
+        }
+        
+        if (product) {
+            tiers.forEach(tier => {
+                const opt = document.createElement('option');
+                opt.value = tier;
+                opt.textContent = `${tier} pcs`;
+                quantityInput.appendChild(opt);
+            });
+        }
+    }
+
+    function handleProductChange() {
+        resetDynamicFields();
+        renderProductFields();
+        renderQuantityOptions();
+        updatePrice();
+    }
+
+    const updatePrice = () => {
         const product = productSelect.value;
         const quantity = parseInt(quantityInput.value) || 0;
 
@@ -77,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
             emptyStateContainer.classList.remove('hidden');
             pricingBoxContainer.classList.add('hidden');
             interactiveFieldsContainer.classList.add('hidden');
-            customProductContainer.classList.add('hidden');
             tailoredQuoteMsg.classList.add('hidden');
             backToCalcBtn.classList.add('hidden');
             savingsMessage.classList.add('hidden');
@@ -88,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (product === 'other') {
             emptyStateContainer.classList.add('hidden');
             interactiveFieldsContainer.classList.remove('hidden');
-            customProductContainer.classList.remove('hidden');
             pricingBoxContainer.classList.add('hidden');
             tailoredQuoteMsg.classList.add('hidden');
             backToCalcBtn.classList.remove('hidden');
@@ -108,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
         interactiveFieldsContainer.classList.remove('hidden');
         pricingBoxContainer.classList.remove('hidden');
         tailoredQuoteMsg.classList.add('hidden');
-        customProductContainer.classList.add('hidden');
 
         let tier = 50;
         if (quantity >= 1000) tier = 1000;
@@ -168,18 +209,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    productSelect.addEventListener('change', calculatePricing);
-    quantityInput.addEventListener('input', calculatePricing);
-    timelineSelect.addEventListener('change', calculatePricing);
-    addonLogo.addEventListener('change', calculatePricing);
-    addonCard.addEventListener('change', calculatePricing);
-    addonPackaging.addEventListener('change', calculatePricing);
+    productSelect.addEventListener('change', handleProductChange);
+    quantityInput.addEventListener('change', updatePrice);
+    timelineSelect.addEventListener('change', updatePrice);
+    addonLogo.addEventListener('change', updatePrice);
+    addonCard.addEventListener('change', updatePrice);
+    addonPackaging.addEventListener('change', updatePrice);
 
-    calculatePricing();
+    renderProductFields();
+    renderQuantityOptions();
+    updatePrice();
 
     backToCalcBtn.addEventListener('click', () => {
         productSelect.value = "";
-        calculatePricing();
+        handleProductChange();
     });
 
     // ✅ FIXED SUBMIT FLOW
@@ -266,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resetBtn.addEventListener('click', () => {
         estimatorForm.reset();
         leadForm.reset();
-        calculatePricing();
+        handleProductChange();
 
         successMessage.classList.add('hidden');
         estimatorPanel.style.display = 'block';
