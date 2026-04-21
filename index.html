@@ -78,11 +78,8 @@
 
                         <!-- Step 2 (Minimal) -->
                         <div class="form-group">
-                            <div class="select-wrapper">
-                                <select id="quantity" name="quantity" required>
-                                    <option value="" disabled selected hidden>Select quantity</option>
-                                </select>
-                            </div>
+                            <input type="number" id="quantity" name="quantity"
+                                placeholder="Enter quantity (e.g. 100, 250, 1000)" min="1">
                             <div id="quantity-hint" class="quantity-hint"></div>
                             <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">Bulk pricing improves
                                 significantly above 100 pcs</div>
