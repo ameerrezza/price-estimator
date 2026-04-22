@@ -767,3 +767,33 @@ body.dark .whatsapp-btn:hover {
     background-color: var(--surface-hover);
     border-color: var(--text-main);
 }
+
+.brand-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.logo {
+    height: 28px;
+    width: auto;
+}
+
+.brand-name {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #888;
+}
+
+.brand-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.logo {
+    height: 28px;
+    width: auto;
+}
