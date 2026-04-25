@@ -107,7 +107,8 @@
                         <p><strong>Name:</strong> KUL Gifts Team</p>
                         <p><strong>Company:</strong> KUL Gifts Worldwide</p>
                         <p><strong>Phone:</strong> 60182630390</p>
-                        <p><strong>Email:</strong> <a href="mailto:kulgifts2u@gmail.com">kulgifts2u@gmail.com</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:kulgifts2u@gmail.com">kulgifts2u@gmail.com</a>
+                        </p>
                     </div>
                     <div class="invoice-to">
                         <h4 class="address-title">TO:</h4>
@@ -186,7 +187,8 @@
                         <li>Production will begin after confirmation</li>
                         <li>Delivery timeline will be shared upon order confirmation</li>
                         <li>Shipping/delivery is NOT included in this quotation</li>
-                        <li>Delivery can be arranged via Lalamove (paid by client or arranged by KUL Gifts upon request)
+                        <li>Delivery can be arranged via Lalamove (paid by client or arranged by KUL Gifts upon
+                            request)
                         </li>
                     </ul>
                 </div>
@@ -200,11 +202,16 @@
             const params = new URLSearchParams(window.location.search);
 
             function formatRM(value) {
-                if (!value || value === "-" || value === "Custom") return value;
-                let cleanVal = String(value).replace(/^RM\s*/i, '').replace(/,/g, '');
-                let parsed = parseFloat(cleanVal);
-                if (isNaN(parsed)) return value;
+                let parsed = parseFloat(value);
+                if (isNaN(parsed)) return "RM 0.00";
                 return "RM " + parsed.toFixed(2);
+            }
+
+            function parseCurrency(val) {
+                if (!val || val === "-" || val === "Custom") return 0;
+                let clean = String(val).replace(/[RM,\s]/gi, '');
+                let num = parseFloat(clean);
+                return isNaN(num) ? 0 : num;
             }
 
             // Dates definition
@@ -227,7 +234,9 @@
             // Order Details
             document.getElementById("preview-product").textContent = params.get("product") || "-";
             document.getElementById("preview-quantity").textContent = params.get("quantity") ? params.get("quantity") + " pcs" : "- pcs";
-            document.getElementById("preview-unit-price").textContent = formatRM(params.get("unitPrice")) || "-";
+            
+            const unitPriceRaw = params.get("unitPrice");
+            document.getElementById("preview-unit-price").textContent = (unitPriceRaw === "Custom") ? "Custom" : formatRM(parseCurrency(unitPriceRaw));
 
             // Addons
             const rawAddons = params.get("addons");
@@ -237,10 +246,20 @@
                 document.getElementById("preview-addons-container").innerHTML = '<p class="no-addons">None</p>';
             }
 
-            // Pricing Summary
-            document.getElementById("preview-subtotal").textContent = formatRM(params.get("subtotal")) || "-";
-            document.getElementById("preview-addons-total").textContent = formatRM(params.get("addonsTotal")) || "-";
-            document.getElementById("preview-final-total").textContent = formatRM(params.get("total")) || "-";
+            // Pricing Summary Logic
+            const subtotalVal = parseCurrency(params.get("subtotal"));
+            const addonsTotalVal = parseCurrency(params.get("addonsTotal"));
+            
+            let totalVal;
+            if (params.get("total")) {
+                totalVal = parseCurrency(params.get("total"));
+            } else {
+                totalVal = subtotalVal + addonsTotalVal;
+            }
+
+            document.getElementById("preview-subtotal").textContent = formatRM(subtotalVal);
+            document.getElementById("preview-addons-total").textContent = formatRM(addonsTotalVal);
+            document.getElementById("preview-final-total").textContent = formatRM(totalVal);
 
             // Trigger auto print
             window.onload = function () {
