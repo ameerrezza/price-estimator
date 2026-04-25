@@ -1095,3 +1095,55 @@ body.dark .invoice-divider {
     body.dark .invoice-card { background: none; color: #000; }
     body { background-color: white; }
 }
+
+/* Logo Styling */
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 40px;
+    object-fit: contain;
+}
+
+/* Mobile Responsiveness for Quotation Preview & PDF */
+@media (max-width: 768px) {
+    /* Stack FROM/TO */
+    .invoice-addresses {
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+    .invoice-from, .invoice-to {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Fix Text Wrapping */
+    .invoice-card p, .invoice-card span {
+        word-break: break-word;
+    }
+    .invoice-card {
+        font-size: 14px;
+    }
+
+    /* Fix Table (Order Details) */
+    .invoice-table {
+        width: 100%;
+        font-size: 14px;
+    }
+    .invoice-row span {
+        padding: 6px;
+    }
+
+    /* Fix Container */
+    .invoice-card {
+        padding: 15px !important;
+        border-radius: 8px !important;
+    }
+
+    /* Improve Spacing */
+    .invoice-section {
+        margin-bottom: 20px !important;
+    }
+}
