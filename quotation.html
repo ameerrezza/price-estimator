@@ -202,9 +202,12 @@
             const params = new URLSearchParams(window.location.search);
 
             function formatRM(value) {
-                let parsed = parseFloat(value);
-                if (isNaN(parsed)) return "RM 0.00";
-                return "RM " + parsed.toFixed(2);
+                const num = parseFloat(value);
+                if (isNaN(num)) return "RM 0.00";
+                return "RM " + num.toLocaleString('en-MY', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
             }
 
             function parseCurrency(val) {
