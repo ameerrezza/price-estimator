@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    function generateQuoteId() {
+        const random = Math.floor(100000 + Math.random() * 900000);
+        return "KG-" + random;
+    }
+
     const pricingData = {
         "Batik Totebag Reversible": { 50: 49, 100: 42, 300: 36, 500: 32, 1000: 29 },
         "Batik Mini Doorgift": { 50: 49, 100: 42, 300: 36, 500: 32, 1000: 29 },
@@ -44,8 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const estimatorForm = document.getElementById('estimator-form');
     const backToCalcBtn = document.getElementById('back-to-calc-btn');
 
+    const previewSection = document.getElementById('preview-section');
+    const confirmQuoteBtn = document.getElementById('confirm-quote-btn');
+    const editDetailsBtn = document.getElementById('edit-details-btn');
+
     let currentUnitPrice = 0;
     let currentTotalPrice = 0;
+    let currentPayload = null;
 
     // Theme Management
     const initTheme = () => {
@@ -160,10 +170,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
         quantityHint.textContent = hint;
 
+        const addonsGroup = document.getElementById('addons-group');
+        const addonWarning = document.getElementById('addon-warning');
         let addonTotal = 0;
-        if (addonLogo.checked) addonTotal += 3;
-        if (addonCard.checked) addonTotal += 2;
-        if (addonPackaging.checked) addonTotal += 5;
+        
+        if (quantity < 50 && product !== 'other') {
+            addonLogo.checked = false;
+            addonCard.checked = false;
+            addonPackaging.checked = false;
+            
+            addonLogo.disabled = true;
+            addonCard.disabled = true;
+            addonPackaging.disabled = true;
+            
+            if (addonsGroup) {
+                addonsGroup.style.opacity = '0.5';
+                addonsGroup.style.pointerEvents = 'none';
+            }
+            if (addonWarning) addonWarning.classList.remove('hidden');
+        } else {
+            addonLogo.disabled = false;
+            addonCard.disabled = false;
+            addonPackaging.disabled = false;
+            
+            if (addonsGroup) {
+                addonsGroup.style.opacity = '1';
+                addonsGroup.style.pointerEvents = 'auto';
+            }
+            if (addonWarning) addonWarning.classList.add('hidden');
+            
+            if (addonLogo.checked) addonTotal += 3;
+            if (addonCard.checked) addonTotal += 2;
+            if (addonPackaging.checked) addonTotal += 5;
+        }
 
         let rushFee = timelineSelect.value === "Urgent" ? 5 : 0;
 
@@ -203,84 +242,168 @@ document.addEventListener('DOMContentLoaded', () => {
         handleProductChange();
     });
 
-    // ✅ FIXED SUBMIT FLOW
+    // ✅ FIXED SUBMIT FLOW - NOW WITH PREVIEW
     leadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const product = productSelect.value;
         const addons = [];
-        if (product !== 'other') {
-            if (addonLogo.checked) addons.push('Logo Printing');
-            if (addonCard.checked) addons.push('Custom Card');
-            if (addonPackaging.checked) addons.push('Premium Packaging');
-        }
+        let addonCostPerUnit = 0;
+        const addonsDetails = [];
+        let quantity = parseInt(quantityInput.value) || 0;
 
-        const payload = {
+        // Strict Enforcement: If quantity < 50, ignore customization completely
+        if (quantity >= 50 && product !== 'other') {
+            if (addonLogo.checked) {
+                addons.push('Logo Printing');
+                addonCostPerUnit += 3;
+                addonsDetails.push({ name: 'Logo Printing', price: 3 });
+            }
+            if (addonCard.checked) {
+                addons.push('Custom Card');
+                addonCostPerUnit += 2;
+                addonsDetails.push({ name: 'Custom Card', price: 2 });
+            }
+            if (addonPackaging.checked) {
+                addons.push('Premium Packaging');
+                addonCostPerUnit += 5;
+                addonsDetails.push({ name: 'Premium Packaging', price: 5 });
+            }
+        }
+        
+        let customAddonTotal = addonCostPerUnit * quantity;
+        let customSubtotal = currentTotalPrice - customAddonTotal;
+        
+        // Setup Date and Quote ID
+        const now = new Date();
+        const quoteId = generateQuoteId();
+        const dateIssuedStr = now.toLocaleDateString('en-MY', { year: 'numeric', month: 'short', day: 'numeric' });
+        const validUntilDate = new Date(now.setDate(now.getDate() + 7));
+        const validUntilStr = validUntilDate.toLocaleDateString('en-MY', { year: 'numeric', month: 'short', day: 'numeric' });
+
+        currentPayload = {
+            quote_id: quoteId,
             name: document.getElementById('name').value,
             company: document.getElementById('company').value,
             phone: document.getElementById('phone').value,
             email: document.getElementById('email').value,
             product: product === 'other' ? "Other/Not Sure" : product,
             customDescription: product === 'other' ? customProductInput.value : "N/A",
-            quantity: parseInt(quantityInput.value) || 0,
+            quantity: quantity,
             timeline: timelineSelect ? timelineSelect.value : "Normal",
             addons: addons,
             unitPrice: product === 'other' ? "Custom" : formatCurrency(currentUnitPrice),
+            subtotal: formatCurrency(customSubtotal),
+            addons_total: formatCurrency(customAddonTotal),
             totalPrice: product === 'other' ? "Custom" : formatCurrency(currentTotalPrice)
         };
 
-        const submitBtn = document.getElementById('submit-lead-btn');
-        const originalBtnText = submitBtn.innerHTML;
+        // Populate Preview Meta
+        document.getElementById('preview-quote-id').textContent = currentPayload.quote_id;
+        document.getElementById('preview-date-issued').textContent = dateIssuedStr;
+        document.getElementById('preview-valid-until').textContent = validUntilStr;
 
+        // Populate Delivery Info
+        document.getElementById('preview-name').textContent = currentPayload.name;
+        document.getElementById('preview-company').textContent = currentPayload.company || "N/A";
+        document.getElementById('preview-phone').textContent = currentPayload.phone;
+        document.getElementById('preview-email').textContent = currentPayload.email;
+        
+        // Populate Order details
+        document.getElementById('preview-product').textContent = currentPayload.product;
+        document.getElementById('preview-quantity').textContent = currentPayload.quantity + " pcs";
+        document.getElementById('preview-unit-price').textContent = currentPayload.unitPrice;
+        
+        // Populate Addons
+        const addonsContainer = document.getElementById('preview-addons-container');
+        addonsContainer.innerHTML = '';
+        if (addonsDetails.length > 0 && product !== 'other') {
+            addonsDetails.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'addon-item';
+                const totalAddonItemPrice = item.price * quantity;
+                row.innerHTML = `<span>${item.name}: RM ${item.price} &times; ${quantity}</span><span>+ ${formatCurrency(totalAddonItemPrice)}</span>`;
+                addonsContainer.appendChild(row);
+            });
+        } else {
+            addonsContainer.innerHTML = '<p class="no-addons">None</p>';
+        }
+        
+        if (product === 'other') {
+            document.getElementById('preview-subtotal').textContent = "Custom";
+            document.getElementById('preview-addons-total').textContent = "Custom";
+            document.getElementById('preview-final-total').textContent = "Custom";
+        } else {
+            document.getElementById('preview-subtotal').textContent = formatCurrency(customSubtotal);
+            document.getElementById('preview-addons-total').textContent = formatCurrency(customAddonTotal);
+            document.getElementById('preview-final-total').textContent = formatCurrency(currentTotalPrice);
+        }
+
+        // Show Preview
+        estimatorPanel.style.display = 'none';
+        leadSection.style.display = 'none';
+        previewSection.classList.remove('hidden');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Flow: Edit Details
+    editDetailsBtn.addEventListener('click', () => {
+        previewSection.classList.add('hidden');
+        estimatorPanel.style.display = 'block';
+        leadSection.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Flow: Confirm & Generate Official Quotation
+    confirmQuoteBtn.addEventListener('click', async () => {
+        const confirmBtnOriginalText = confirmQuoteBtn.innerHTML;
+        
         try {
-            submitBtn.innerHTML = '<span>Submitting...</span>';
-            submitBtn.disabled = true;
+            confirmQuoteBtn.innerHTML = '<span>Submitting...</span>';
+            confirmQuoteBtn.disabled = true;
 
-            // Send payload to Make.com Webhook via Hidden Form to bypass CORS and prevent redirect
-            let iframe = document.getElementById('hidden_iframe');
-            if (!iframe) {
-                iframe = document.createElement('iframe');
-                iframe.id = 'hidden_iframe';
-                iframe.name = 'hidden_iframe';
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-            }
+            const quoteId = currentPayload.quote_id; // Ensures single generation flows perfectly
+            const addonsText = Array.isArray(currentPayload.addons) ? currentPayload.addons.join(', ') : currentPayload.addons;
 
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'https://hook.eu2.make.com/r7xytg9xmljdx4fks2cpxqyp6lc1y3mx';
-            form.target = 'hidden_iframe';
-
-            Object.entries(payload).forEach(([key, value]) => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = Array.isArray(value) ? value.join(', ') : value;
-                form.appendChild(input);
+            await fetch('https://hook.eu2.make.com/r7xytg9xmljdx4fks2cpxqyp6lc1y3mx', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: currentPayload.name,
+                    company: currentPayload.company,
+                    phone: currentPayload.phone,
+                    email: currentPayload.email,
+                    product: currentPayload.product,
+                    quantity: currentPayload.quantity,
+                    unitPrice: currentPayload.unitPrice,
+                    subtotal: currentPayload.subtotal,
+                    addons: encodeURIComponent(addonsText),
+                    addonsTotal: currentPayload.addons_total,
+                    total: currentPayload.totalPrice,
+                    quote_id: quoteId
+                })
             });
 
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
-
-            // Small delay to ensure browser initiates submission before hiding UI
             setTimeout(() => {
-                estimatorPanel.style.display = 'none';
-                leadSection.style.display = 'none';
+                previewSection.classList.add('hidden');
                 successMessage.classList.remove('hidden');
 
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
+                confirmQuoteBtn.innerHTML = confirmBtnOriginalText;
+                confirmQuoteBtn.disabled = false;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 500);
 
         } catch (error) {
             console.error('Submission error:', error);
             // Fallback success UI
-            estimatorPanel.style.display = 'none';
-            leadSection.style.display = 'none';
+            previewSection.classList.add('hidden');
             successMessage.classList.remove('hidden');
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
+            confirmQuoteBtn.innerHTML = confirmBtnOriginalText;
+            confirmQuoteBtn.disabled = false;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     });
 
@@ -299,15 +422,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const whatsappBtn = document.getElementById('whatsapp-confirm-btn');
     if (whatsappBtn) {
         whatsappBtn.addEventListener('click', () => {
-            let product = productSelect.value || 'Not specified';
-            if (product === 'other') {
-                product = customProductInput.value || 'Other/Not sure';
-            }
-            const quantity = quantityInput.value || '0';
-            const total = totalPriceDisplay.textContent || 'RM 0.00';
-            const timeline = timelineSelect ? timelineSelect.value : 'Not specified';
-
-            const message = `Hi KUL Gifts, I’d like to confirm this order:\n\nProduct: ${product}\nQuantity: ${quantity} pcs\nProduction Timeline: ${timeline}\nEstimated Price: ${total}\n\nCan you confirm availability and next steps?`;
+            const quoteIdText = currentPayload && currentPayload.quote_id ? currentPayload.quote_id : 'Unknown';
+            const message = `Hi KUL Gifts, I would like to proceed with my quotation (Quote ID: ${quoteIdText})`;
 
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/60182630390?text=${encodedMessage}`, '_blank');
