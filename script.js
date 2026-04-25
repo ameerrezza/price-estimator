@@ -242,7 +242,58 @@ document.addEventListener('DOMContentLoaded', () => {
         handleProductChange();
     });
 
-    // ✅ FIXED SUBMIT FLOW - NOW WITH PREVIEW
+    // Shared Webhook Submission Logic
+    const sendToWebhook = async (isCustom = false) => {
+        try {
+            const quoteId = currentPayload.quote_id;
+            const addonsText = Array.isArray(currentPayload.addons) ? currentPayload.addons.join(', ') : currentPayload.addons;
+
+            await fetch('https://hook.eu2.make.com/r7xytg9xmljdx4fks2cpxqyp6lc1y3mx', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: currentPayload.name,
+                    company: currentPayload.company,
+                    phone: currentPayload.phone,
+                    email: currentPayload.email,
+                    product: currentPayload.product,
+                    quantity: currentPayload.quantity,
+                    unitPrice: currentPayload.unitPrice,
+                    subtotal: currentPayload.subtotal,
+                    addons: encodeURIComponent(addonsText),
+                    addonsTotal: currentPayload.addons_total,
+                    total: currentPayload.totalPrice,
+                    quote_id: quoteId
+                })
+            });
+
+            setTimeout(() => {
+                if (isCustom) {
+                    estimatorPanel.style.display = 'none';
+                    leadSection.style.display = 'none';
+                } else {
+                    previewSection.classList.add('hidden');
+                }
+                successMessage.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 500);
+
+        } catch (error) {
+            console.error('Submission error:', error);
+            if (isCustom) {
+                estimatorPanel.style.display = 'none';
+                leadSection.style.display = 'none';
+            } else {
+                previewSection.classList.add('hidden');
+            }
+            successMessage.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    // ✅ FIXED SUBMIT FLOW - NOW WITH CONDITIONAL REDIRECT
     leadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -272,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         let customAddonTotal = addonCostPerUnit * quantity;
-        let customSubtotal = currentTotalPrice - customAddonTotal;
+        let customSubtotal = (currentTotalPrice || 0) - customAddonTotal;
         
         // Setup Date and Quote ID
         const now = new Date();
@@ -293,58 +344,65 @@ document.addEventListener('DOMContentLoaded', () => {
             timeline: timelineSelect ? timelineSelect.value : "Normal",
             addons: addons,
             unitPrice: product === 'other' ? "Custom" : formatCurrency(currentUnitPrice),
-            subtotal: formatCurrency(customSubtotal),
-            addons_total: formatCurrency(customAddonTotal),
+            subtotal: product === 'other' ? "Custom" : formatCurrency(customSubtotal),
+            addons_total: product === 'other' ? "Custom" : formatCurrency(customAddonTotal),
             totalPrice: product === 'other' ? "Custom" : formatCurrency(currentTotalPrice)
         };
 
-        // Populate Preview Meta
-        document.getElementById('preview-quote-id').textContent = currentPayload.quote_id;
-        document.getElementById('preview-date-issued').textContent = dateIssuedStr;
-        document.getElementById('preview-valid-until').textContent = validUntilStr;
-
-        // Populate Delivery Info
-        document.getElementById('preview-name').textContent = currentPayload.name;
-        document.getElementById('preview-company').textContent = currentPayload.company || "N/A";
-        document.getElementById('preview-phone').textContent = currentPayload.phone;
-        document.getElementById('preview-email').textContent = currentPayload.email;
-        
-        // Populate Order details
-        document.getElementById('preview-product').textContent = currentPayload.product;
-        document.getElementById('preview-quantity').textContent = currentPayload.quantity + " pcs";
-        document.getElementById('preview-unit-price').textContent = currentPayload.unitPrice;
-        
-        // Populate Addons
-        const addonsContainer = document.getElementById('preview-addons-container');
-        addonsContainer.innerHTML = '';
-        if (addonsDetails.length > 0 && product !== 'other') {
-            addonsDetails.forEach(item => {
-                const row = document.createElement('div');
-                row.className = 'addon-item';
-                const totalAddonItemPrice = item.price * quantity;
-                row.innerHTML = `<span>${item.name}: RM ${item.price} &times; ${quantity}</span><span>+ ${formatCurrency(totalAddonItemPrice)}</span>`;
-                addonsContainer.appendChild(row);
-            });
-        } else {
-            addonsContainer.innerHTML = '<p class="no-addons">None</p>';
-        }
-        
         if (product === 'other') {
-            document.getElementById('preview-subtotal').textContent = "Custom";
-            document.getElementById('preview-addons-total').textContent = "Custom";
-            document.getElementById('preview-final-total').textContent = "Custom";
+            // ✅ CUSTOM ORDER FLOW - Direct to Success
+            document.getElementById('success-title').textContent = "Thanks!";
+            document.getElementById('success-text').textContent = "For custom orders, our team will assist you directly.";
+            document.getElementById('whatsapp-btn-text').textContent = "Chat on WhatsApp";
+            
+            sendToWebhook(true); 
         } else {
+            // ✅ STANDARD FLOW - Show Preview First
+            document.getElementById('success-title').textContent = "Quotation Generated!";
+            document.getElementById('success-text').textContent = "Thank you for choosing KUL Gifts. Final quotation has been sent to your email.";
+            document.getElementById('whatsapp-btn-text').textContent = "Chat on WhatsApp to Confirm Order";
+
+            // Populate Preview Meta
+            document.getElementById('preview-quote-id').textContent = currentPayload.quote_id;
+            document.getElementById('preview-date-issued').textContent = dateIssuedStr;
+            document.getElementById('preview-valid-until').textContent = validUntilStr;
+
+            // Populate Delivery Info
+            document.getElementById('preview-name').textContent = currentPayload.name;
+            document.getElementById('preview-company').textContent = currentPayload.company || "N/A";
+            document.getElementById('preview-phone').textContent = currentPayload.phone;
+            document.getElementById('preview-email').textContent = currentPayload.email;
+            
+            // Populate Order details
+            document.getElementById('preview-product').textContent = currentPayload.product;
+            document.getElementById('preview-quantity').textContent = currentPayload.quantity + " pcs";
+            document.getElementById('preview-unit-price').textContent = currentPayload.unitPrice;
+            
+            // Populate Addons
+            const addonsContainer = document.getElementById('preview-addons-container');
+            addonsContainer.innerHTML = '';
+            if (addonsDetails.length > 0) {
+                addonsDetails.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'addon-item';
+                    const totalAddonItemPrice = item.price * quantity;
+                    row.innerHTML = `<span>${item.name}: RM ${item.price} &times; ${quantity}</span><span>+ ${formatCurrency(totalAddonItemPrice)}</span>`;
+                    addonsContainer.appendChild(row);
+                });
+            } else {
+                addonsContainer.innerHTML = '<p class="no-addons">None</p>';
+            }
+            
             document.getElementById('preview-subtotal').textContent = formatCurrency(customSubtotal);
             document.getElementById('preview-addons-total').textContent = formatCurrency(customAddonTotal);
             document.getElementById('preview-final-total').textContent = formatCurrency(currentTotalPrice);
+
+            // Show Preview
+            estimatorPanel.style.display = 'none';
+            leadSection.style.display = 'none';
+            previewSection.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
-        // Show Preview
-        estimatorPanel.style.display = 'none';
-        leadSection.style.display = 'none';
-        previewSection.classList.remove('hidden');
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     // Flow: Edit Details
@@ -358,53 +416,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Flow: Confirm & Generate Official Quotation
     confirmQuoteBtn.addEventListener('click', async () => {
         const confirmBtnOriginalText = confirmQuoteBtn.innerHTML;
-        
-        try {
-            confirmQuoteBtn.innerHTML = '<span>Submitting...</span>';
-            confirmQuoteBtn.disabled = true;
+        confirmQuoteBtn.innerHTML = '<span>Submitting...</span>';
+        confirmQuoteBtn.disabled = true;
 
-            const quoteId = currentPayload.quote_id; // Ensures single generation flows perfectly
-            const addonsText = Array.isArray(currentPayload.addons) ? currentPayload.addons.join(', ') : currentPayload.addons;
+        await sendToWebhook(false);
 
-            await fetch('https://hook.eu2.make.com/r7xytg9xmljdx4fks2cpxqyp6lc1y3mx', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: currentPayload.name,
-                    company: currentPayload.company,
-                    phone: currentPayload.phone,
-                    email: currentPayload.email,
-                    product: currentPayload.product,
-                    quantity: currentPayload.quantity,
-                    unitPrice: currentPayload.unitPrice,
-                    subtotal: currentPayload.subtotal,
-                    addons: encodeURIComponent(addonsText),
-                    addonsTotal: currentPayload.addons_total,
-                    total: currentPayload.totalPrice,
-                    quote_id: quoteId
-                })
-            });
-
-            setTimeout(() => {
-                previewSection.classList.add('hidden');
-                successMessage.classList.remove('hidden');
-
-                confirmQuoteBtn.innerHTML = confirmBtnOriginalText;
-                confirmQuoteBtn.disabled = false;
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 500);
-
-        } catch (error) {
-            console.error('Submission error:', error);
-            // Fallback success UI
-            previewSection.classList.add('hidden');
-            successMessage.classList.remove('hidden');
-            confirmQuoteBtn.innerHTML = confirmBtnOriginalText;
-            confirmQuoteBtn.disabled = false;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        confirmQuoteBtn.innerHTML = confirmBtnOriginalText;
+        confirmQuoteBtn.disabled = false;
     });
 
     resetBtn.addEventListener('click', () => {
@@ -422,11 +440,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const whatsappBtn = document.getElementById('whatsapp-confirm-btn');
     if (whatsappBtn) {
         whatsappBtn.addEventListener('click', () => {
-            const quoteIdText = currentPayload && currentPayload.quote_id ? currentPayload.quote_id : 'Unknown';
-            const message = `Hi KUL Gifts, I would like to proceed with my quotation (Quote ID: ${quoteIdText})`;
-
-            const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/60182630390?text=${encodedMessage}`, '_blank');
+            if (productSelect.value === 'other') {
+                const name = document.getElementById('name').value;
+                const company = document.getElementById('company').value || "N/A";
+                const quantity = quantityInput.value || "Not specified";
+                const message = `Name: ${name}\nCompany: ${company}\nProduct: Custom Order\nQuantity: ${quantity}`;
+                window.open(`https://wa.me/60182630390?text=${encodeURIComponent(message)}`, '_blank');
+            } else {
+                const quoteIdText = currentPayload && currentPayload.quote_id ? currentPayload.quote_id : 'Unknown';
+                const message = `Hi KUL Gifts, I would like to proceed with my quotation (Quote ID: ${quoteIdText})`;
+                window.open(`https://wa.me/60182630390?text=${encodeURIComponent(message)}`, '_blank');
+            }
         });
     }
 
