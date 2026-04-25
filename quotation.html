@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quotation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        body {
+            background-color: #FFFFFF !important;
+            color: #111111 !important;
+            padding: 2rem;
+            margin: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .print-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 0 1px #e5e5e5;
+        }
+
+        .invoice-card {
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            border-top: none !important;
+            padding-top: 2rem !important;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            height: 40px;
+            object-fit: contain;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+                zoom: 0.9;
+            }
+
+            .print-container {
+                max-width: 100%;
+                border: none;
+                padding: 0;
+                box-shadow: none;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .invoice-section {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .invoice-card {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                border-top: none;
+            }
+
+            .logo {
+                height: 35px;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="print-container">
+        <section id="preview-section" class="preview-layout">
+            <div class="preview-card invoice-card">
+
+                <!-- Header -->
+                <div class="invoice-header">
+                    <div class="invoice-brand">
+                        <div class="logo-wrapper">
+                            <img src="https://kulgifts.com/logo.png" alt="KUL Gifts Logo" class="logo">
+                        </div>
+                        <p>Bulk Batik Gifts Supplier</p>
+                    </div>
+                    <div class="invoice-title">
+                        <h1 style="color: #FFCA07;">QUOTATION</h1>
+                        <div class="invoice-meta">
+                            <p><strong>Quote ID:</strong> <span id="preview-quote-id">-</span></p>
+                            <p><strong>Date Issued:</strong> <span id="preview-date-issued">-</span></p>
+                            <p><strong>Valid Until:</strong> <span id="preview-valid-until">-</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Separation Line -->
+                <div class="invoice-divider-thick"></div>
+
+                <!-- Addresses -->
+                <div class="invoice-addresses">
+                    <div class="invoice-from">
+                        <h4 class="address-title">FROM:</h4>
+                        <p><strong>Name:</strong> KUL Gifts Team</p>
+                        <p><strong>Company:</strong> KUL Gifts Worldwide</p>
+                        <p><strong>Phone:</strong> 60182630390</p>
+                        <p><strong>Email:</strong> <a href="mailto:kulgifts2u@gmail.com">kulgifts2u@gmail.com</a></p>
+                    </div>
+                    <div class="invoice-to">
+                        <h4 class="address-title">TO:</h4>
+                        <p><strong>Name:</strong> <span id="preview-name">-</span></p>
+                        <p><strong>Company:</strong> <span id="preview-company">-</span></p>
+                        <p><strong>Phone:</strong> <span id="preview-phone">-</span></p>
+                        <p><strong>Email:</strong> <span id="preview-email">-</span></p>
+                    </div>
+                </div>
+
+                <div class="invoice-divider"></div>
+
+                <!-- Order Details -->
+                <div class="invoice-section">
+                    <h4 class="section-heading">ORDER DETAILS</h4>
+                    <div class="invoice-table">
+                        <div class="invoice-row header-row">
+                            <span class="col-main">Product</span>
+                            <span class="col-qty">Quantity</span>
+                            <span class="col-price">Unit Price</span>
+                        </div>
+                        <div class="invoice-row">
+                            <span id="preview-product" class="col-main font-semibold">-</span>
+                            <span id="preview-quantity" class="col-qty">- pcs</span>
+                            <span id="preview-unit-price" class="col-price">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="invoice-divider"></div>
+
+                <!-- Add-ons Details -->
+                <div class="invoice-section">
+                    <h4 class="section-heading">ADD-ONS</h4>
+                    <div id="preview-addons-container" class="invoice-addons-list">
+                        <!-- Dynamic addon html will be injected here -->
+                        <p class="no-addons">None</p>
+                    </div>
+                </div>
+
+                <div class="invoice-divider"></div>
+
+                <!-- Pricing Summary -->
+                <div class="invoice-summary-wrapper">
+                    <div class="invoice-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="preview-subtotal">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Add-ons Total:</span>
+                            <span id="preview-addons-total">-</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>TOTAL AMOUNT:</span>
+                            <span id="preview-final-total" class="total-gold">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Information Section -->
+                <div class="invoice-section" style="margin-top: 2rem;">
+                    <h4 class="section-heading">PAYMENT INFORMATION</h4>
+                    <div class="invoice-payment" style="font-size: 0.95rem; line-height: 1.6;">
+                        <p style="margin: 0;"><strong>Bank:</strong> Maybank</p>
+                        <p style="margin: 0;"><strong>Account Name:</strong> KUL GIFT WORLDWIDE</p>
+                        <p style="margin: 0;"><strong>Account Number:</strong> 518608055493</p>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div class="invoice-notes">
+                    <h4 class="notes-heading">NOTES:</h4>
+                    <ul>
+                        <li>This quotation is valid for 7 days from the date issued</li>
+                        <li>Production will begin after confirmation</li>
+                        <li>Delivery timeline will be shared upon order confirmation</li>
+                        <li>Shipping/delivery is NOT included in this quotation</li>
+                        <li>Delivery can be arranged via Lalamove (paid by client or arranged by KUL Gifts upon request)
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+
+            function formatRM(value) {
+                if (!value || value === "-" || value === "Custom") return value;
+                let cleanVal = String(value).replace(/^RM\s*/i, '').replace(/,/g, '');
+                let parsed = parseFloat(cleanVal);
+                if (isNaN(parsed)) return value;
+                return "RM " + parsed.toFixed(2);
+            }
+
+            // Dates definition
+            const now = new Date();
+            const dateIssuedStr = now.toLocaleDateString('en-MY', { year: 'numeric', month: 'short', day: 'numeric' });
+            const validUntilDate = new Date(now.setDate(now.getDate() + 7));
+            const validUntilStr = validUntilDate.toLocaleDateString('en-MY', { year: 'numeric', month: 'short', day: 'numeric' });
+
+            // Meta
+            document.getElementById("preview-quote-id").textContent = params.get("quote_id") || "-";
+            document.getElementById("preview-date-issued").textContent = dateIssuedStr;
+            document.getElementById("preview-valid-until").textContent = validUntilStr;
+
+            // Contact Info
+            document.getElementById("preview-name").textContent = params.get("name") || "-";
+            document.getElementById("preview-company").textContent = params.get("company") || "-";
+            document.getElementById("preview-phone").textContent = params.get("phone") || "-";
+            document.getElementById("preview-email").textContent = params.get("email") || "-";
+
+            // Order Details
+            document.getElementById("preview-product").textContent = params.get("product") || "-";
+            document.getElementById("preview-quantity").textContent = params.get("quantity") ? params.get("quantity") + " pcs" : "- pcs";
+            document.getElementById("preview-unit-price").textContent = formatRM(params.get("unitPrice")) || "-";
+
+            // Addons
+            const rawAddons = params.get("addons");
+            if (rawAddons && rawAddons !== "None" && rawAddons !== "-" && rawAddons !== "") {
+                document.getElementById("preview-addons-container").innerHTML = decodeURIComponent(rawAddons);
+            } else {
+                document.getElementById("preview-addons-container").innerHTML = '<p class="no-addons">None</p>';
+            }
+
+            // Pricing Summary
+            document.getElementById("preview-subtotal").textContent = formatRM(params.get("subtotal")) || "-";
+            document.getElementById("preview-addons-total").textContent = formatRM(params.get("addonsTotal")) || "-";
+            document.getElementById("preview-final-total").textContent = formatRM(params.get("total")) || "-";
+
+            // Trigger auto print
+            window.onload = function () {
+                setTimeout(() => {
+                    window.print();
+                }, 500);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
