@@ -8,7 +8,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -103,7 +103,10 @@
                             <div id="addons-field-container">
                                 <div class="form-group">
                                     <label>Customize Your Order (Add-ons)</label>
-                                    <div class="addons-group">
+                                    <div id="addon-warning" class="hidden" style="color: #ea4335; font-size: 0.85rem; margin-bottom: 12px; font-weight: 500;">
+                                        Customization is available for orders of 50 pcs and above only.
+                                    </div>
+                                    <div class="addons-group" id="addons-group">
                                         <label class="addon-checkbox" for="addon-logo">
                                             <div class="addon-left">
                                                 <div class="custom-checkbox">
@@ -240,33 +243,145 @@
                         </div>
 
                         <button type="submit" class="submit-btn" id="submit-lead-btn"
-                            style="margin-bottom: 16px; background-color: transparent; border: 1px solid var(--border); color: var(--text-main);">
-                            <span>Get Formal Quote Now</span>
+                            style="margin-bottom: 16px; background-color: var(--primary); color: var(--bg-color); border: none;">
+                            <span>Generate My Quote</span>
                             <svg class="icon-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 12h14M12 5l7 7-7 7" />
                             </svg>
                         </button>
-                        <div class="whatsapp-container"
-                            style="margin-top: 8px; padding-top: 0; border-top: none; text-align: center; margin-bottom: 2.5rem;">
-                            <button type="button" id="whatsapp-confirm-btn" class="submit-btn"
-                                style="margin: 0 auto 12px auto; width: 100%; max-width: 300px; background-color: #25D366; color: #fff; border: none;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.63 1.438h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                                </svg>
-                                <span>Direct Whatsapp (Fastest)</span>
-                            </button>
-                            <p
-                                style="font-size: 0.95rem; color: var(--text-muted); margin-top: 8px; margin-bottom: 0.75rem; font-weight: 500;">
-                                Fastest way to confirm your order</p>
-                        </div>
+                        
                         <div style="text-align: center;">
                             <p class="catalog-hint secondary">Want to explore more options? <a
                                     href="https://kulgifts.com/wp-content/uploads/2026/04/KUL-Gifts-2025-Catalog.pdf"
                                     target="_blank">View our catalog</a></p>
                         </div>
                     </form>
+                </div>
+            </section>
+
+            <!-- Professional Quotation Preview Section -->
+            <section id="preview-section" class="preview-layout hidden">
+                <div class="preview-card invoice-card">
+                    
+                    <!-- Header -->
+                    <div class="invoice-header">
+                        <div class="invoice-brand">
+                            <h2>KUL GIFTS</h2>
+                            <p>Bulk Batik Gifts Supplier</p>
+                        </div>
+                        <div class="invoice-title">
+                            <h1 style="color: #FFCA07;">QUOTATION</h1>
+                            <div class="invoice-meta">
+                                <p><strong>Quote ID:</strong> <span id="preview-quote-id">-</span></p>
+                                <p><strong>Date Issued:</strong> <span id="preview-date-issued">-</span></p>
+                                <p><strong>Valid Until:</strong> <span id="preview-valid-until">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Separation Line -->
+                    <div class="invoice-divider-thick"></div>
+
+                    <!-- Addresses -->
+                    <div class="invoice-addresses">
+                        <div class="invoice-from">
+                            <h4 class="address-title">FROM:</h4>
+                            <p><strong>Name:</strong> KUL Gifts Team</p>
+                            <p><strong>Company:</strong> KUL Gifts Worldwide</p>
+                            <p><strong>Phone:</strong> 60182630390</p>
+                            <p><strong>Email:</strong> <a href="mailto:kulgifts2u@gmail.com">kulgifts2u@gmail.com</a></p>
+                        </div>
+                        <div class="invoice-to">
+                            <h4 class="address-title">TO:</h4>
+                            <p><strong>Name:</strong> <span id="preview-name">-</span></p>
+                            <p><strong>Company:</strong> <span id="preview-company">-</span></p>
+                            <p><strong>Phone:</strong> <span id="preview-phone">-</span></p>
+                            <p><strong>Email:</strong> <span id="preview-email">-</span></p>
+                        </div>
+                    </div>
+
+                    <div class="invoice-divider"></div>
+
+                    <!-- Order Details -->
+                    <div class="invoice-section">
+                        <h4 class="section-heading">ORDER DETAILS</h4>
+                        <div class="invoice-table">
+                            <div class="invoice-row header-row">
+                                <span class="col-main">Product</span>
+                                <span class="col-qty">Quantity</span>
+                                <span class="col-price">Unit Price</span>
+                            </div>
+                            <div class="invoice-row">
+                                <span id="preview-product" class="col-main font-semibold">-</span>
+                                <span id="preview-quantity" class="col-qty">- pcs</span>
+                                <span id="preview-unit-price" class="col-price">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="invoice-divider"></div>
+
+                    <!-- Add-ons Details -->
+                    <div class="invoice-section">
+                        <h4 class="section-heading">ADD-ONS</h4>
+                        <div id="preview-addons-container" class="invoice-addons-list">
+                            <!-- Dynamic addon rows will be injected here -->
+                            <p class="no-addons">None</p>
+                        </div>
+                    </div>
+
+                    <div class="invoice-divider"></div>
+
+                    <!-- Pricing Summary -->
+                    <div class="invoice-summary-wrapper">
+                        <div class="invoice-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span id="preview-subtotal">-</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Add-ons Total:</span>
+                                <span id="preview-addons-total">-</span>
+                            </div>
+                            <div class="summary-row total-row">
+                                <span>TOTAL AMOUNT:</span>
+                                <span id="preview-final-total" class="total-gold">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Information Section -->
+                    <div class="invoice-section" style="margin-top: 2rem;">
+                        <h4 class="section-heading">PAYMENT INFORMATION</h4>
+                        <div class="invoice-payment" style="font-size: 0.95rem; line-height: 1.6;">
+                            <p style="margin: 0;"><strong>Bank:</strong> Maybank</p>
+                            <p style="margin: 0;"><strong>Account Name:</strong> KUL GIFT WORLDWIDE</p>
+                            <p style="margin: 0;"><strong>Account Number:</strong> 518608055493</p>
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="invoice-notes">
+                        <h4 class="notes-heading">NOTES:</h4>
+                        <ul>
+                            <li>This quotation is valid for 7 days from the date issued</li>
+                            <li>Production will begin after confirmation</li>
+                            <li>Delivery timeline will be shared upon order confirmation</li>
+                            <li>Shipping/delivery is NOT included in this quotation</li>
+                            <li>Delivery can be arranged via Lalamove (paid by client or arranged by KUL Gifts upon request)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="invoice-actions no-print">
+                        <button type="button" id="confirm-quote-btn" class="submit-btn primary-btn invoice-btn">
+                            <span>Confirm & Generate Official Quotation</span>
+                        </button>
+                        <button type="button" id="edit-details-btn" class="secondary-btn invoice-btn outline">
+                            <span>Edit Details</span>
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -280,9 +395,20 @@
                 </div>
 
                 <h3>Request Submitted!</h3>
-                <p>
-                    Thank you for choosing KUL Gifts. Our team will get back to you with a formal quotation shortly.
+                <p style="margin-bottom: 1.5rem">
+                    Thank you for choosing KUL Gifts. Final quotation has been sent to your email.
                 </p>
+                
+                <div class="whatsapp-container" style="margin-top: 0; padding-top: 0; border-top: none; text-align: center; margin-bottom: 2rem;">
+                    <button type="button" id="whatsapp-confirm-btn" class="submit-btn"
+                        style="margin: 0 auto 12px auto; width: 100%; max-width: 350px; background-color: #25D366; color: #fff; border: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.63 1.438h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                        </svg>
+                        <span>Chat on WhatsApp to Confirm Order</span>
+                    </button>
+                </div>
+                
                 <button id="reset-btn" class="secondary-btn">Calculate Another Order</button>
             </div>
         </main>
